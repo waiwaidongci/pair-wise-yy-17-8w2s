@@ -100,12 +100,12 @@ function historyHtml(item) {
   `).join('')}</div>`;
 }
 
-function values(form, view) {
+function values(form, view, forEdit) {
   const payload = Object.fromEntries(new FormData(form).entries());
   for (const field of view.fields) {
     if (field.type === 'number') payload[field.name] = Number(payload[field.name] || 0);
   }
-  return { ...view.defaults, ...payload };
+  return forEdit ? payload : { ...view.defaults, ...payload };
 }
 
 function renderTabs() {
@@ -135,20 +135,24 @@ function renderCard(item, collection, view) {
   const relation = view.relation ? `<div class="meta">${escapeHtml(relationLabel(view.relation, item[view.relation.localKey]))}</div>` : '';
   const details = (view.detailFields || []).map((field) => {
     const raw = item[field.name];
-    const value = field.type === 'relation' ? relationLabel(field, raw) : raw;
+    const value = field.type === 'relation' ? relationLabel(field, raw)
+      : (field.type === 'datetime' || field.type === 'datetime-local') ? fmtDate(raw)
+      : raw;
     return `<div>${escapeHtml(field.label)}<br><strong>${escapeHtml(value || '-')}</strong></div>`;
   }).join('');
   const summary = (view.summaryFields || []).map((field) => item[field]).filter(Boolean).join(' · ');
   const actions = state.config.actions
     .filter((action) => action.collection === collection)
+    .filter((action) => !action.visibleWhen || action.visibleWhen.values.includes(item[action.visibleWhen.field]))
     .map((action) => `<button class="${action.danger ? 'danger' : 'ghost'}" data-action="${action.id}" data-id="${item.id}">${escapeHtml(action.label)}</button>`)
     .join('');
+  const editBtn = view.editable ? `<button class="ghost" data-edit="${item.id}" data-view="${view.id}">编辑</button>` : '';
   return `<article class="card">
     <div class="card-head"><h3>${escapeHtml(title)}</h3>${statusValue ? pill(statusValue, toneFor(statusValue)) : ''}</div>
     ${relation}
     ${summary ? `<p>${escapeHtml(summary)}</p>` : ''}
     ${details ? `<div class="detail">${details}</div>` : ''}
-    ${actions ? `<div class="actions">${actions}</div>` : ''}
+    ${actions || editBtn ? `<div class="actions">${actions}${editBtn}</div>` : ''}
     ${historyHtml(item)}
   </article>`;
 }
@@ -181,13 +185,18 @@ function renderDashboardView(view) {
 
 function renderCrudView(view) {
   const statusOptions = view.statusOptions || [];
-  return `<section class="view" id="${view.id}">
-    <div class="grid">
+  const formPanel = view.noForm ? '' : `
       <form class="panel" data-create="${view.collection}" data-view="${view.id}">
         <h2>${escapeHtml(view.formTitle)}</h2>
         <div class="form-grid">${view.fields.map(formField).join('')}</div>
-        <div class="actions"><button>${escapeHtml(view.submitLabel || '保存')}</button></div>
-      </form>
+        <div class="actions">
+          <button type="submit">${escapeHtml(view.submitLabel || '保存')}</button>
+          <button type="button" class="secondary hidden" data-cancel-edit>取消修改</button>
+        </div>
+      </form>`;
+  return `<section class="view" id="${view.id}">
+    <div class="grid${view.noForm ? ' single' : ''}">
+      ${formPanel}
       <div class="panel">
         <h2>${escapeHtml(view.listTitle)}</h2>
         <div class="toolbar">
@@ -201,6 +210,28 @@ function renderCrudView(view) {
       </div>
     </div>
   </section>`;
+}
+
+function fillForm(view, item) {
+  const form = $(`form[data-view="${view.id}"]`);
+  if (!form) return;
+  form.dataset.editing = item.id;
+  for (const field of view.fields) {
+    const input = form.elements[field.name];
+    if (!input) continue;
+    let value = item[field.name] ?? '';
+    if (field.type === 'datetime-local' && value) value = String(value).slice(0, 16);
+    input.value = value;
+  }
+  form.querySelector('button[type="submit"]').textContent = '保存修改';
+  $('[data-cancel-edit]', form).classList.remove('hidden');
+}
+
+function resetForm(form, view) {
+  form.reset();
+  delete form.dataset.editing;
+  form.querySelector('button[type="submit"]').textContent = view.submitLabel || '保存';
+  $('[data-cancel-edit]', form)?.classList.add('hidden');
 }
 
 function render() {
@@ -219,10 +250,42 @@ async function load() {
 document.addEventListener('click', async (event) => {
   const tab = event.target.closest('.tab');
   const action = event.target.closest('[data-action]');
+  const edit = event.target.closest('[data-edit]');
+  const cancelEdit = event.target.closest('[data-cancel-edit]');
   if (tab) setTab(tab.dataset.tab);
+  if (edit) {
+    const view = state.config.views.find((entry) => entry.id === edit.dataset.view);
+    const item = (state.db[view.collection] || []).find((entry) => entry.id === edit.dataset.edit);
+    if (view && item) {
+      setTab(view.id);
+      fillForm(view, item);
+      toast('已载入，可修改后保存');
+    }
+  }
+  if (cancelEdit) {
+    const form = cancelEdit.closest('form');
+    const view = state.config.views.find((entry) => entry.id === form.dataset.view);
+    resetForm(form, view);
+  }
   if (action) {
+    const conf = state.config.actions.find((entry) => entry.id === action.dataset.action);
+    if (!conf) return;
     try {
-      await api(`/api/action/${action.dataset.action}/${action.dataset.id}`, { method: 'POST' });
+      if (conf.endpoint) {
+        const body = {};
+        for (const prompt of conf.prompts || []) {
+          const raw = window.prompt(prompt.label);
+          if (raw === null) return;
+          if (prompt.required && !raw.trim()) {
+            toast(`请填写${prompt.label}`);
+            return;
+          }
+          body[prompt.name] = prompt.type === 'number' ? Number(raw) : raw.trim();
+        }
+        await api(conf.endpoint.replace('{id}', action.dataset.id), { method: 'POST', body: JSON.stringify(body) });
+      } else {
+        await api(`/api/action/${conf.id}/${action.dataset.id}`, { method: 'POST' });
+      }
       await load();
       toast('已更新');
     } catch (error) {
@@ -241,10 +304,22 @@ document.addEventListener('submit', async (event) => {
   if (!form) return;
   event.preventDefault();
   const view = state.config.views.find((entry) => entry.id === form.dataset.view);
-  await api(`/api/${form.dataset.create}`, { method: 'POST', body: JSON.stringify(values(form, view)) });
-  form.reset();
+  const editing = form.dataset.editing;
+  if (editing) {
+    await api(`/api/${form.dataset.create}/${editing}`, { method: 'PATCH', body: JSON.stringify(values(form, view, true)) });
+    resetForm(form, view);
+    await load();
+    toast('已保存修改，未结束记录已按新值重判');
+    return;
+  }
+  const result = await api(`/api/${form.dataset.create}`, { method: 'POST', body: JSON.stringify(values(form, view)) });
+  resetForm(form, view);
   await load();
-  toast('已保存');
+  if (result && result.triggered && result.adjust) {
+    toast(`已保存，触发待调风（第${result.adjust.count}次，温差${result.tempDiff}℃）`);
+  } else {
+    toast('已保存');
+  }
 });
 
 $('#refreshBtn').addEventListener('click', () => load().then(() => toast('已刷新')));
