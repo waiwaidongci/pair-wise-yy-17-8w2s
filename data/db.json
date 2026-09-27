@@ -11,11 +11,31 @@
       "baselineTemp": 16.2,
       "baselineHumidity": 92,
       "baselineCo2": 680,
-      "note": "游客步道上方，滴水频率稳定",
+      "tempDiffLimit": 1,
+      "note": "游客步道上方，讲解换班处上下风段温差明显",
       "createdAt": "2026-06-14T08:00:00.000Z",
       "updatedAt": "2026-06-14T08:00:00.000Z",
       "history": [
         { "at": "2026-06-14T08:00:00.000Z", "action": "创建", "note": "样点建档" }
+      ]
+    },
+    {
+      "id": "site-seed-2",
+      "cave": "北麓三号洞",
+      "zone": "石幔厅",
+      "pointCode": "M-03",
+      "route": "中线巡测",
+      "sensitivity": "中",
+      "protectedStatus": "常规观察",
+      "baselineTemp": 15.8,
+      "baselineHumidity": 90,
+      "baselineCo2": 620,
+      "tempDiffLimit": 1.2,
+      "note": "换班通道旁，已完成一次调风复测闭环",
+      "createdAt": "2026-06-10T08:00:00.000Z",
+      "updatedAt": "2026-06-10T08:00:00.000Z",
+      "history": [
+        { "at": "2026-06-10T08:00:00.000Z", "action": "创建", "note": "样点建档" }
       ]
     }
   ],
@@ -24,19 +44,184 @@
       "id": "survey-seed-1",
       "siteId": "site-seed-1",
       "surveyor": "沈宁",
-      "date": "2026-06-18",
-      "temperature": 17.4,
-      "humidity": 88,
+      "date": "2026-09-27",
+      "upperTemp": 16.4,
+      "lowerTemp": 17.9,
+      "upperHumidity": 93,
+      "lowerHumidity": 88,
+      "tempDiff": 1.5,
       "co2": 920,
       "dripRate": 12,
+      "windDirection": "东风",
+      "layerPosition": "下层观景台",
+      "leaveAt": "2026-09-27T10:40",
       "disturbance": "栏杆外侧有触碰痕迹",
       "photoUrl": "",
-      "status": "异常待复查",
+      "status": "异常",
       "reviewNote": "",
-      "createdAt": "2026-06-18T10:00:00.000Z",
-      "updatedAt": "2026-06-18T10:00:00.000Z",
+      "createdAt": "2026-09-27T10:00:00.000Z",
+      "updatedAt": "2026-09-27T10:00:00.000Z",
       "history": [
-        { "at": "2026-06-18T10:00:00.000Z", "action": "创建", "note": "CO2升高并有干扰痕迹" }
+        { "at": "2026-09-27T10:00:00.000Z", "action": "创建", "note": "换班时段两层温差大" }
+      ]
+    },
+    {
+      "id": "survey-seed-2",
+      "siteId": "site-seed-1",
+      "surveyor": "陆言",
+      "date": "2026-09-27",
+      "upperTemp": 16.5,
+      "lowerTemp": 18.0,
+      "upperHumidity": 92,
+      "lowerHumidity": 87,
+      "tempDiff": 1.5,
+      "co2": 940,
+      "dripRate": 11,
+      "windDirection": "东风",
+      "layerPosition": "下层观景台",
+      "leaveAt": "2026-09-27T11:20",
+      "disturbance": "",
+      "photoUrl": "",
+      "status": "异常",
+      "reviewNote": "",
+      "createdAt": "2026-09-27T11:00:00.000Z",
+      "updatedAt": "2026-09-27T11:00:00.000Z",
+      "history": [
+        { "at": "2026-09-27T11:00:00.000Z", "action": "创建", "note": "接队前复测仍超限" }
+      ]
+    },
+    {
+      "id": "survey-seed-3",
+      "siteId": "site-seed-2",
+      "surveyor": "沈宁",
+      "date": "2026-09-25",
+      "upperTemp": 15.9,
+      "lowerTemp": 17.4,
+      "upperHumidity": 91,
+      "lowerHumidity": 86,
+      "tempDiff": 1.5,
+      "co2": 880,
+      "dripRate": 9,
+      "windDirection": "北风",
+      "layerPosition": "中层步道",
+      "leaveAt": "2026-09-25T09:30",
+      "disturbance": "",
+      "photoUrl": "",
+      "status": "异常",
+      "reviewNote": "",
+      "createdAt": "2026-09-25T09:00:00.000Z",
+      "updatedAt": "2026-09-25T09:00:00.000Z",
+      "history": [
+        { "at": "2026-09-25T09:00:00.000Z", "action": "创建", "note": "温差超限且下层湿度下降" }
+      ]
+    },
+    {
+      "id": "survey-seed-4",
+      "siteId": "site-seed-2",
+      "surveyor": "陆言",
+      "date": "2026-09-25",
+      "upperTemp": 15.8,
+      "lowerTemp": 16.6,
+      "upperHumidity": 91,
+      "lowerHumidity": 90,
+      "tempDiff": 0.8,
+      "co2": 700,
+      "dripRate": 9,
+      "windDirection": "北风",
+      "layerPosition": "中层步道",
+      "leaveAt": "",
+      "disturbance": "待调风记录wind-seed-1复测",
+      "photoUrl": "",
+      "status": "复测",
+      "reviewNote": "",
+      "createdAt": "2026-09-25T11:40:00.000Z",
+      "updatedAt": "2026-09-25T11:40:00.000Z",
+      "history": [
+        { "at": "2026-09-25T11:40:00.000Z", "action": "复测登记", "note": "两层恢复" }
+      ]
+    }
+  ],
+  "windRecords": [
+    {
+      "id": "wind-seed-1",
+      "siteId": "site-seed-1",
+      "triggerSurveyId": "survey-seed-2",
+      "surveyor": "陆言",
+      "windDirection": "东风",
+      "layerPosition": "下层观景台",
+      "leaveAt": "2026-09-27T11:20",
+      "upperTemp": 16.5,
+      "lowerTemp": 18.0,
+      "upperHumidity": 92,
+      "lowerHumidity": 87,
+      "tempDiff": 1.5,
+      "tempDiffLimit": 1,
+      "baselineHumidity": 92,
+      "judgeReasons": [
+        "两层温差1.5℃超过限值1℃",
+        "下层湿度87%低于基准92%"
+      ],
+      "hitCount": 2,
+      "status": "待调风",
+      "adjustNote": "",
+      "adjustedBy": "",
+      "adjustedAt": "",
+      "rechecks": [],
+      "lastRecheckSurveyor": "",
+      "lastRecheckAt": "",
+      "createdAt": "2026-09-27T10:00:00.000Z",
+      "updatedAt": "2026-09-27T11:00:00.000Z",
+      "history": [
+        { "at": "2026-09-27T11:00:00.000Z", "action": "异常累加", "note": "第2次异常：两层温差1.5℃超过限值1℃；下层湿度87%低于基准92%（陆言）" },
+        { "at": "2026-09-27T10:00:00.000Z", "action": "建立待调风", "note": "两层温差1.5℃超过限值1℃；下层湿度88%低于基准92%" }
+      ]
+    },
+    {
+      "id": "wind-seed-2",
+      "siteId": "site-seed-2",
+      "triggerSurveyId": "survey-seed-3",
+      "surveyor": "沈宁",
+      "windDirection": "北风",
+      "layerPosition": "中层步道",
+      "leaveAt": "2026-09-25T09:30",
+      "upperTemp": 15.9,
+      "lowerTemp": 17.4,
+      "upperHumidity": 91,
+      "lowerHumidity": 86,
+      "tempDiff": 1.5,
+      "tempDiffLimit": 1.2,
+      "baselineHumidity": 90,
+      "judgeReasons": [
+        "两层温差1.5℃超过限值1.2℃",
+        "下层湿度86%低于基准90%"
+      ],
+      "hitCount": 1,
+      "status": "已结束",
+      "adjustNote": "开启中部导流风门并暂停该段讲解15分钟",
+      "adjustedBy": "邱实",
+      "adjustedAt": "2026-09-25T11:00:00.000Z",
+      "rechecks": [
+        {
+          "surveyId": "survey-seed-4",
+          "surveyor": "陆言",
+          "at": "2026-09-25T11:40:00.000Z",
+          "upperTemp": 15.8,
+          "lowerTemp": 16.6,
+          "upperHumidity": 91,
+          "lowerHumidity": 90,
+          "tempDiff": 0.8,
+          "recovered": true
+        }
+      ],
+      "lastRecheckSurveyor": "陆言",
+      "lastRecheckAt": "2026-09-25T11:40:00.000Z",
+      "closedAt": "2026-09-25T11:40:00.000Z",
+      "createdAt": "2026-09-25T09:00:00.000Z",
+      "updatedAt": "2026-09-25T11:40:00.000Z",
+      "history": [
+        { "at": "2026-09-25T11:40:00.000Z", "action": "复测恢复", "note": "陆言复测：温差0.8℃，下层湿度90%，两层恢复，记录结束" },
+        { "at": "2026-09-25T11:00:00.000Z", "action": "完成调风", "note": "邱实执行调风，待30分钟后由其他巡测员复测；开启中部导流风门并暂停该段讲解15分钟" },
+        { "at": "2026-09-25T09:00:00.000Z", "action": "建立待调风", "note": "两层温差1.5℃超过限值1.2℃；下层湿度86%低于基准90%" }
       ]
     }
   ]

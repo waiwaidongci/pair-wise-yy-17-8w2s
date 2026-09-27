@@ -187,6 +187,10 @@ main {
   align-items: start;
 }
 
+.grid.no-form {
+  grid-template-columns: 1fr;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -329,6 +333,96 @@ main {
   transform: translateY(0);
 }
 
+/* 风况看板 */
+.wind-board table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.wind-board th,
+.wind-board td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.wind-board th {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.wind-board .metric {
+  font-weight: 800;
+}
+
+.wind-board .sub,
+.muted {
+  display: block;
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.metric-bad {
+  color: var(--bad);
+}
+
+.metric-ok {
+  color: var(--ok);
+}
+
+/* 待调风卡片 */
+.wind-card .reasons {
+  margin: 8px 0 0;
+  color: var(--bad);
+  font-size: 13px;
+}
+
+.wind-form {
+  margin-top: 12px;
+  border-top: 1px dashed var(--line);
+  padding-top: 12px;
+}
+
+.wind-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.wind-form-row .grow {
+  grid-column: span 2;
+}
+
+.rechecks {
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.recheck-item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  background: #f7f3eb;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.recheck-item.ok strong {
+  color: var(--ok);
+}
+
+.recheck-item.bad strong {
+  color: var(--bad);
+}
+
 @media (max-width: 980px) {
   .stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -354,6 +448,14 @@ main {
   .detail,
   .toolbar {
     grid-template-columns: 1fr;
+  }
+
+  .wind-board {
+    overflow-x: auto;
+  }
+
+  .wind-form-row .grow {
+    grid-column: auto;
   }
 
   .history-item {
